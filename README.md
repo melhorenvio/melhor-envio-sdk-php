@@ -20,8 +20,6 @@ Agora ficou mais fácil ter o serviço do Melhor Envio no seu projeto de e-comme
 * [Créditos](##Créditos)
 * [Licença](##Licença)
 
-## Dependências
-
 ### require 
 * PHP >= 5.6
 * Ext-json = *
@@ -40,6 +38,70 @@ composer require melhorenvio/melhor-envio-sdk-php
 ```
 
 ## Configuração inicial
+```php
+require "./vendor/autoload.php";
+
+use MelhorEnvio\MelhorEnvioSdkPhp\Event;
+use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
+use MelhorEnvio\Resources\Shipment\Product;
+
+$provider = new OAuth2(
+    $appData['client_id'],
+    $appData['client_secret'],
+    $appData['redirect_uri']
+);
+
+$provider->setScopes('shipping-calculate');
+$linkAuthorize = $provider->getAuthorizationUrl();
+
+echo $linkAuthorize;
+```
+
+```php
+require "./vendor/autoload.php";
+
+use MelhorEnvio\Enums\Environment;
+use MelhorEnvio\MelhorEnvioSdkPhp\Event;
+use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
+use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
+use MelhorEnvio\Resources\Shipment\Product;
+
+$appData = [
+    'client_id' => 2635,
+    'client_secret' => 'O9WeVIi7zzCNhqveldS7oEm0YSF5lU6gCilnSkRj',
+    'redirect_uri' => 'https://bridge-woocommerce.test/callback'
+];
+
+Event::listen('refresh', function ($token, $refreshToken) {
+    // Put here trading rule to save accessToken e refreshToken.
+});
+
+$shipment = new Shipment(
+    $accessToken,
+    $refreshToken,
+    Environment::SANDBOX,
+    $appData['client_id'],
+    $appData['client_secret'],
+    $appData['redirect_uri']
+);
+
+$calculator = $shipment->calculator();
+
+$calculator->postalCode('01010010', '20271130');
+
+$calculator->setOwnHand();
+$calculator->setReceipt(false);
+$calculator->setCollect(false);
+
+$calculator->addProducts(
+    new Product(uniqid(), 40, 30, 50, 10.00, 100.0, 1),
+    new Product(uniqid(), 5, 1, 10, 0.1, 50.0, 1)
+);
+
+$quotations = $calculator->calculate();
+
+var_dump($quotations);
+```
 
 ## Criando a instância do Melhor Envio
 
