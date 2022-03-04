@@ -38,6 +38,7 @@ composer require melhorenvio/melhor-envio-sdk-php
 ```
 
 ## Configuração inicial
+### Obtendo link de autorização de conta do Melhor Envio
 ```php
 require "./vendor/autoload.php";
 
@@ -56,6 +57,27 @@ $linkAuthorize = $provider->getAuthorizationUrl();
 
 echo $linkAuthorize;
 ```
+### Obtendo Access Token e Refresh Token
+```php
+require "./vendor/autoload.php";
+
+use MelhorEnvio\MelhorEnvioSdkPhp\Event;
+use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
+use MelhorEnvio\Resources\Shipment\Product;
+
+$provider = new OAuth2(
+    $appData['client_id'],
+    $appData['client_secret'],
+    $appData['redirect_uri']
+);
+
+$code = $_GET['code'];
+
+$tokens = $provider->getAccessToken($code);
+var_dump($tokens);
+die;
+```
+
 
 ```php
 require "./vendor/autoload.php";
