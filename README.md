@@ -93,12 +93,6 @@ use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
 use MelhorEnvio\Resources\Shipment\Product;
 
-$appData = [
-    'client_id' => 2635,
-    'client_secret' => 'O9WeVIi7zzCNhqveldS7oEm0YSF5lU6gCilnSkRj',
-    'redirect_uri' => 'https://bridge-woocommerce.test/callback'
-];
-
 Event::listen('refresh', function ($token, $refreshToken) {
     // Put here trading rule to save accessToken e refreshToken.
 });
@@ -128,6 +122,19 @@ $calculator->addProducts(
 $quotations = $calculator->calculate();
 
 var_dump($quotations);
+```
+
+### Recebendo Access Tokens e Refresh Tokens atualizados
+O Access Token gerado pelo Melhor Envio tem a validade de 1(um) mês, após esse período é possível atualizar o token de forma automatiza com o refresh token, por isso é necessário sempre manter atulizado os access tokens e refresh tokens, visando isso, o Melhor Envio SDK possui um evento de listerner de receber com os dados de tokens atualizados.  
+Você deverá implementar a lógica para persistir esses dados na sua plataforma, veja um exemplo abaixo:
+```php
+Event::listen('refresh', function ($token, $refreshToken) {
+    // Aqui deve ser inserido a sua lógica de persitir as informações na sua plataforma, o código abaixo é apenas um exemplo, o mesmo deve ser subistituido para a sua realidade.
+   Credintials::update([
+       'access_token' => $token,
+       'refresh_token' => $refreshToken 
+   ]) 
+});
 ```
 
 ## Criando a instância do Melhor Envio
