@@ -58,6 +58,8 @@ $linkAuthorize = $provider->getAuthorizationUrl();
 echo $linkAuthorize;
 ```
 ### Obtendo Access Token e Refresh Token
+Para maiores informações sobre autenticação, acessar a documentação do Auth SDK:
+https://packagist.org/packages/melhorenvio/auth-sdk-php
 ```php
 require "./vendor/autoload.php";
 
@@ -78,6 +80,9 @@ var_dump($tokens);
 die;
 ```
 
+### Realizando cotações
+Para maiores informações sobre cotações, acessar a documentação do Shipment SDK:
+https://packagist.org/packages/melhorenvio/shipment-sdk-php
 
 ```php
 require "./vendor/autoload.php";
