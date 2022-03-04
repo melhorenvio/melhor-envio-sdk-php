@@ -1,0 +1,21 @@
+{
+    "name": "melhorenvio/melhor-envio-sdk-php",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "MelhorEnvio\\MelhorEnvioSdkPhp\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Vinícius Tessmann",
+            "email": "vinicius.tessmann@melhorenvio.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "melhorenvio/auth-sdk-php": "dev-master",
+        "melhorenvio/shipment-sdk-php": "dev-master"
+    }
+}
