@@ -2,9 +2,7 @@
 
 require "./vendor/autoload.php";
 
-use MelhorEnvio\MelhorEnvioSdkPhp\Event;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
-use MelhorEnvio\Resources\Shipment\Product;
 
 $appData = [
     'client_id' => 2635,
@@ -27,4 +25,3 @@ if (!empty($code['c'])) {
 
 $provider->setScopes('shipping-calculate');
 var_dump($provider->getAuthorizationUrl());
-die;
