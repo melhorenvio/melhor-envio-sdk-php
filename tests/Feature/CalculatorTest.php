@@ -7,6 +7,7 @@ require "vendor/autoload.php";
 use Dotenv\Dotenv;
 use MelhorEnvio\Enums\Environment;
 use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
+use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use MelhorEnvio\Resources\Shipment\Product;
 use MelhorEnvio\Resources\Resource;
 use MelhorEnvio\MelhorEnvioSdkPhp\Calculator;
@@ -25,19 +26,16 @@ class CalculatorTest extends TestCase
         $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../../');
         $dotenv->load();
 
-        $appData = [
-            'client_id' => $_ENV['TEST_CLIENT_ID'],
-            'client_secret' => $_ENV['TEST_CLIENT_SECRET'],
-            'redirect_uri' => $_ENV['TEST_REDIRECT_URI']
-        ];
+        $oAuth2 = new OAuth2(
+            $_ENV['TEST_CLIENT_ID'],
+            $_ENV['TEST_CLIENT_SECRET'],
+            $_ENV['TEST_REDIRECT_URI']
+        );
 
         $this->shipment = new Shipment(
+            $oAuth2,
             $_ENV['ACCESS_TOKEN'],
-            $_ENV['REFRESH_TOKEN'],
-            Environment::SANDBOX,
-            $appData['client_id'],
-            $appData['client_secret'],
-            $appData['redirect_uri']
+            $_ENV['REFRESH_TOKEN']
         );
 
         $this->calculator = new Calculator($this->shipment);
@@ -60,6 +58,6 @@ class CalculatorTest extends TestCase
 
         $quotations =  $this->calculator->calculate();
 
-        $this->assertOk(is_array($quotations));
+        $this->assertTrue(is_array($quotations));
     }
 }

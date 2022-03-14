@@ -28,4 +28,19 @@ class OAuth2 extends AuthO2Auth
         }
         return $tokens;
     }
+
+    public function getClientId(): int
+    {
+        return $this->clientId;
+    }
+
+    public function getAppSecret(): string
+    {
+        return $this->clientSecret;
+    }
+
+    public function getEnvironment(): string
+    {
+        return $this->environment;
+    }
 }

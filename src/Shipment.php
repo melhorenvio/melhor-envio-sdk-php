@@ -4,6 +4,7 @@ namespace MelhorEnvio\MelhorEnvioSdkPhp;
 
 use MelhorEnvio\Shipment as ShipmentSDK;
 use MelhorEnvio\MelhorEnvioSdkPhp\Calculator;
+use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 
 class Shipment extends ShipmentSDK
 {
@@ -15,21 +16,15 @@ class Shipment extends ShipmentSDK
 
     protected string $refreshToken;
 
-    public function __construct(
-        string $accessToken,
-        string $refreshToken,
-        string $environment,
-        int $appId,
-        string $appSecret,
-        string $appRedirectUri
-    ) {
-        parent::__construct($accessToken, $environment);
+    public function __construct(OAuth2 $oAuth2, string $accessToken, string $refreshToken)
+    {
+        parent::__construct($accessToken, $oAuth2->getEnvironment());
+        
+        $this->appId = $oAuth2->getClientId();
 
-        $this->appId = $appId;
+        $this->appSecret = $oAuth2->getAppSecret();
 
-        $this->appSecret = $appSecret;
-
-        $this->appRedirectUri = $appRedirectUri;
+        $this->appRedirectUri = $oAuth2->getRedirectUri();
 
         $this->refreshToken = $refreshToken;
     }
