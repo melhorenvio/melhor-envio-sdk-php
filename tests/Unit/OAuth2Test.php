@@ -81,4 +81,28 @@ class OAuth2Test extends TestCase
     {
         $this->assertTrue(method_exists($this->oAuth2, 'refreshToken'));
     }
+
+    /**
+     * @test
+     */
+    public function returns_true_when_exists_method_get_client_id()
+    {
+        $this->assertTrue(method_exists($this->oAuth2, 'getClientId'));
+    }
+
+    /**
+     * @test
+     */
+    public function returns_true_when_exists_method_get_app_secret()
+    {
+        $this->assertTrue(method_exists($this->oAuth2, 'getAppSecret'));
+    }
+
+    /**
+     * @test
+     */
+    public function returns_true_when_exists_method_get_environment()
+    {
+        $this->assertTrue(method_exists($this->oAuth2, 'getEnvironment'));
+    }
 }

@@ -97,13 +97,16 @@ Event::listen('refresh', function ($token, $refreshToken) {
     // Put here trading rule to save accessToken e refreshToken.
 });
 
-$shipment = new Shipment(
-    $accessToken,
-    $refreshToken,
-    Environment::SANDBOX,
-    $appData['client_id'],
-    $appData['client_secret'],
-    $appData['redirect_uri']
+$oAuth2 = new OAuth2(
+    CLIENT_ID,
+    TEST_CLIENT_SECRET,
+    TEST_REDIRECT_URI
+);
+
+$this->shipment = new Shipment(
+    $oAuth2,
+    ACCESS_TOKEN,
+    REFRESH_TOKEN
 );
 
 $calculator = $shipment->calculator();
