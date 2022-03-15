@@ -4,9 +4,10 @@ namespace MelhorEnvio\MelhorEnvioSdkPhp;
 
 use MelhorEnvio\Shipment as ShipmentSDK;
 use MelhorEnvio\MelhorEnvioSdkPhp\Calculator;
+use MelhorEnvio\MelhorEnvioSdkPhp\Interfaces\ShipmentInterface;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 
-class Shipment extends ShipmentSDK
+class Shipment extends ShipmentSDK implements ShipmentInterface
 {
     protected int $appId;
 
