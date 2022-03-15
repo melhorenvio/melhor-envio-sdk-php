@@ -2,7 +2,9 @@
 
 namespace MelhorEnvio\MelhorEnvioSdkPhp;
 
-class Event
+use MelhorEnvio\MelhorEnvioSdkPhp\Interfaces\EventInterface;
+
+class Event implements EventInterface
 {
     private static $events = [];
 

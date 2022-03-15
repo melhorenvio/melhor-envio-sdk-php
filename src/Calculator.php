@@ -5,12 +5,13 @@ namespace MelhorEnvio\MelhorEnvioSdkPhp;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use MelhorEnvio\Enums\Endpoint;
+use MelhorEnvio\MelhorEnvioSdkPhp\Interfaces\CalculatorInterface;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
 use MelhorEnvio\Resources\Shipment\Calculator as CalculatorShipmentSDK;
 use MelhorEnvio\Resources\Resource;
 
-class Calculator extends CalculatorShipmentSDK
+class Calculator extends CalculatorShipmentSDK implements CalculatorInterface
 {
     protected Resource $resource;
 
@@ -40,7 +41,7 @@ class Calculator extends CalculatorShipmentSDK
         }
     }
 
-    private function updateResourceHttp(): void
+    public function updateResourceHttp(): void
     {
         $tokens = $this->handleRefreshToken();
         $this->resource->setHttp(new Client([
@@ -52,7 +53,7 @@ class Calculator extends CalculatorShipmentSDK
         ]));
     }
 
-    private function handleRefreshToken(): array
+    public function handleRefreshToken(): array
     {
         $provider = new OAuth2(
             $this->resource->getAppId(),

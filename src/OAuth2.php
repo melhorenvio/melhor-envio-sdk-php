@@ -7,8 +7,9 @@ use GuzzleHttp\Exception\ClientException;
 use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
 use MelhorEnvio\Auth\OAuth2 as AuthO2Auth;
 use MelhorEnvio\MelhorEnvioSdkPhpEvent;
+use MelhorEnvio\MelhorEnvioSdkPhp\Interfaces\OAuth2Interface;
 
-class OAuth2 extends AuthO2Auth
+class OAuth2 extends AuthO2Auth implements OAuth2Interface
 {
     protected Client $client;
 
