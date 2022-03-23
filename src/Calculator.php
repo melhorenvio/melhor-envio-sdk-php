@@ -6,6 +6,10 @@ use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\RequestException;
+use GuzzleHttp\Exception\ConnectException;
 use MelhorEnvio\Enums\Endpoint;
 use MelhorEnvio\MelhorEnvioSdkPhp\Interfaces\CalculatorInterface;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
@@ -19,7 +23,7 @@ class Calculator extends CalculatorShipmentSDK
 {
     protected Resource $resource;
 
-    protected static $tries = 0;
+    protected const MAX_RETRIES = 2;
 
     public function __construct(Resource $resource)
     {
@@ -31,9 +35,47 @@ class Calculator extends CalculatorShipmentSDK
 
         $this->stack->push($this->middlewareRefreshToken());
 
+        $this->stack->push(
+            Middleware::retry($this->retryDecider(), $this->retryDelay())
+        );
+
         $this->resource->setHttp(
             $this->client($this->resource->token)
         );
+    }
+
+    protected function retryDecider()
+    {
+        return function (
+            $retries,
+            Request $request,
+            Response $response = null,
+            RequestException $exception = null
+        ) {
+            
+            if ($retries >= self::MAX_RETRIES) {
+                return false;
+            }
+            
+            if ($exception instanceof ConnectException) {
+                return true;
+            }
+
+            if ($response) {
+                if ($response->getStatusCode() >= 500) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+    }
+
+    protected function retryDelay()
+    {
+        return function ($numberOfRetries) {
+            return 1000 * $numberOfRetries;
+        };
     }
 
     public function middlewareRefreshToken()
