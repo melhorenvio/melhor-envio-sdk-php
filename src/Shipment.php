@@ -9,28 +9,32 @@ use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 
 class Shipment extends ShipmentSDK implements ShipmentInterface
 {
-    protected int $appId;
+    /*protected int $appId;
 
     protected string $appSecret;
 
     protected string $appRedirectUri;
 
-    protected string $refreshToken;
+    protected string $refreshToken;*/
+
+    public OAuth2 $oAuth2;
 
     public function __construct(OAuth2 $oAuth2, string $accessToken, string $refreshToken)
     {
         parent::__construct($accessToken, $oAuth2->getEnvironment());
         
-        $this->appId = $oAuth2->getClientId();
+        $this->oAuth2 = $oAuth2;
+        
+        /*$this->appId = $oAuth2->getClientId();
 
         $this->appSecret = $oAuth2->getAppSecret();
 
         $this->appRedirectUri = $oAuth2->getRedirectUri();
 
-        $this->refreshToken = $refreshToken;
+        $this->refreshToken = $refreshToken;*/
     }
 
-    public function getRefreshToken(): string
+    /*public function getRefreshToken(): string
     {
         return $this->refreshToken;
     }
@@ -48,7 +52,7 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
     public function getAppRedirectUri(): string
     {
         return $this->appRedirectUri;
-    }
+    }*/
 
     public function calculator(): Calculator
     {
