@@ -6,7 +6,7 @@ use MelhorEnvio\MelhorEnvioSdkPhp\Calculator;
 
 interface ShipmentInterface
 {
-    public function getRefreshToken(): string;
+    /*public function getRefreshToken(): string;
 
     public function getAppId(): int;
 
@@ -14,5 +14,5 @@ interface ShipmentInterface
 
     public function getAppRedirectUri(): string;
 
-    public function calculator(): Calculator;
+    public function calculator(): Calculator;*/
 }

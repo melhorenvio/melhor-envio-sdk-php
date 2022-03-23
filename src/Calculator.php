@@ -15,6 +15,8 @@ class Calculator extends CalculatorShipmentSDK implements CalculatorInterface
 {
     protected Resource $resource;
 
+    //todo: make logic tries.
+
     public function __construct(Resource $resource)
     {
         parent::__construct($resource);
@@ -34,6 +36,7 @@ class Calculator extends CalculatorShipmentSDK implements CalculatorInterface
             ]);
             return json_decode((string) $response->getBody(), true);
         } catch (\Exception $exception) {
+            //todo: use middleware Guzzle.
             if ($exception->getCode() == 401) {
                 $this->updateResourceHttp();
                 return $this->calculate();
@@ -61,6 +64,6 @@ class Calculator extends CalculatorShipmentSDK implements CalculatorInterface
             $this->resource->getAppRedirectUri()
         );
 
-        return $provider->refreshToken($this->resource->getRefreshToken());
+        return $provider->refreshToken();
     }
 }
