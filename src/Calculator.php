@@ -40,8 +40,21 @@ class Calculator extends CalculatorShipmentSDK
         );
 
         $this->resource->setHttp(
-            $this->client($this->resource->token)
+            $this->client($this->resource->getToken())
         );
+    }
+
+    public function client(String $token): Client
+    {
+        return new Client([
+            'handler' => $this->stack,
+            'base_uri' => Endpoint::ENDPOINTS[$this->resource->getEnvironment()] . '/api/' . Endpoint::VERSIONS[$this->resource->getEnvironment()] . '/',
+            'timeout' => 10,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+                'Accept' => 'application/json',
+            ]
+        ]);
     }
 
     protected function retryDecider()
@@ -78,7 +91,7 @@ class Calculator extends CalculatorShipmentSDK
         };
     }
 
-    public function middlewareRefreshToken()
+    protected function middlewareRefreshToken()
     {
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
@@ -106,42 +119,8 @@ class Calculator extends CalculatorShipmentSDK
         ]);
     }
 
-    /**
-     * @throws InvalidCalculatorPayloadException|CalculatorException
-     */
-    public function calculate()
-    {
-        parent::validatePayload();
-        try {
-            $response = $this->resource->getHttp()->post('me/shipment/calculate', [
-                'json' => $this->payload,
-            ]);
-            return json_decode((string) $response->getBody(), true);
-        } catch (\Exception $exception) {
-            //todo: make exception.
-        }
-    }
-
-    public function client(String $token): Client
-    {
-        return new Client([
-            'handler' => $this->stack,
-            'base_uri' => Endpoint::ENDPOINTS[$this->resource->getEnvironment()] . '/api/' . Endpoint::VERSIONS[$this->resource->getEnvironment()] . '/',
-            'timeout' => 10,
-            'headers' => [
-                'Authorization' => 'Bearer ' . $token,
-                'Accept' => 'application/json',
-            ]
-        ]);
-    }
-
     public function handleRefreshToken(): array
     {
-        $provider = new OAuth2(
-            $this->resource->getAppId(),
-            $this->resource->getAppSecret(),
-            $this->resource->getAppRedirectUri()
-        );
-        return $provider->refreshToken($this->resource->refreshToken);
+        return $this->resource->oAuth2->refreshToken($this->resource->getRefreshToken());
     }
 }

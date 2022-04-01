@@ -8,12 +8,12 @@ class Event implements EventInterface
 {
     private static $events = [];
 
-    public static function listen($name, $callback)
+    public static function listen($name, $callback): void
     {
         self::$events[$name][] = $callback;
     }
 
-    public static function trigger($name, $argument = null)
+    public static function trigger($name, $argument = null): void
     {
         foreach (self::$events[$name] as $event => $callback) {
             if ($argument && is_array($argument)) {
