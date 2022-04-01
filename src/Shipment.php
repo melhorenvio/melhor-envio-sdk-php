@@ -3,7 +3,6 @@
 namespace MelhorEnvio\MelhorEnvioSdkPhp;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
@@ -12,7 +11,6 @@ use GuzzleHttp\Psr7\RequestException;
 use GuzzleHttp\Exception\ConnectException;
 use MelhorEnvio\Enums\Endpoint;
 use MelhorEnvio\Shipment as ShipmentSDK;
-use MelhorEnvio\MelhorEnvioSdkPhp\Calculator;
 use MelhorEnvio\MelhorEnvioSdkPhp\Interfaces\ShipmentInterface;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use Psr\Http\Message\ResponseInterface;
