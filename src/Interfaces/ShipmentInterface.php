@@ -2,17 +2,21 @@
 
 namespace MelhorEnvio\MelhorEnvioSdkPhp\Interfaces;
 
+use GuzzleHttp\Client;
 use MelhorEnvio\MelhorEnvioSdkPhp\Calculator;
+use Psr\Http\Message\RequestInterface;
 
 interface ShipmentInterface
 {
-    /*public function getRefreshToken(): string;
+    public function client(): Client;
 
-    public function getAppId(): int;
+    protected function retryDecider();
 
-    public function getAppSecret(): string;
+    protected function retryDelay();
 
-    public function getAppRedirectUri(): string;
+    protected function middlewareRefreshToken();
 
-    public function calculator(): Calculator;*/
+    private function updateToken(RequestInterface $request);
+
+    public function handleRefreshToken(): array;
 }
