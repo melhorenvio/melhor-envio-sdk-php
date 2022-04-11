@@ -4,16 +4,10 @@ require "./vendor/autoload.php";
 
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 
-$appData = [
-    'client_id' => 2635,
-    'client_secret' => 'O9WeVIi7zzCNhqveldS7oEm0YSF5lU6gCilnSkRj',
-    'redirect_uri' => 'https://bridge-woocommerce.test/callback'
-];
-
 $provider = new OAuth2(
-    $appData['client_id'],
-    $appData['client_secret'],
-    $appData['redirect_uri']
+    CLIENT_ID,
+    CLIENT_SECRET,
+    REDIRECT_URI
 );
 
 $code = getopt("c:");
