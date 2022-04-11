@@ -133,7 +133,7 @@ Você deverá implementar a lógica para persistir esses dados na sua plataforma
 ```php
 Event::listen('refresh', function ($token, $refreshToken) {
     // Aqui deve ser inserido a sua lógica de persitir as informações na sua plataforma, o código abaixo é apenas um exemplo, o mesmo deve ser subistituido para a sua realidade.
-   Credintials::update([
+    Credentials::update([
        'access_token' => $token,
        'refresh_token' => $refreshToken 
    ]) 
