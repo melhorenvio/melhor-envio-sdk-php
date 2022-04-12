@@ -1,13 +1,13 @@
 # Melhor Envio SDK - Integração com Melhor Envio
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/melhorenvio/shipment-sdk-php.svg?style=flat-square)](https://packagist.org/packages/melhorenvio/shipment-sdk-php)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/melhorenvio/shipment-sdk-php.svg?style=flat-square)](https://packagist.org/packages/melhorenvio/melhor-envio-sdk-php)
 [![Build Status](https://img.shields.io/travis/melhorenvio/shipment-sdk-php/master.svg?style=flat-square)](https://travis-ci.org/melhorenvio/shipment-sdk-php)
 [![Quality Score](https://img.shields.io/scrutinizer/g/melhorenvio/shipment-sdk-php.svg?style=flat-square)](https://scrutinizer-ci.com/g/melhorenvio/shipment-sdk-php)
-[![Total Downloads](https://img.shields.io/packagist/dt/melhorenvio/shipment-sdk-php.svg?style=flat-square)](https://packagist.org/packages/melhorenvio/shipment-sdk-php)
+[![Total Downloads](https://img.shields.io/packagist/dt/melhorenvio/shipment-sdk-php.svg?style=flat-square)](https://packagist.org/packages/melhorenvio/melhor-envio-sdk-php)
 
 Agora ficou mais fácil ter o serviço do Melhor Envio no seu projeto de e-commerce.
 
-## Índice
+## Indice
 
 * [Instalação](#instalacao)
 * [Cofiguração Inicial](##configuração-inicial)
@@ -21,7 +21,7 @@ Agora ficou mais fácil ter o serviço do Melhor Envio no seu projeto de e-comme
 * [Licença](##Licença)
 
 ### require 
-* PHP >= 5.6
+* PHP >= 7.4
 * Ext-json = *
 * Guzzlehttp/guzzle >= 6.5
 
@@ -133,7 +133,7 @@ Você deverá implementar a lógica para persistir esses dados na sua plataforma
 ```php
 Event::listen('refresh', function ($token, $refreshToken) {
     // Aqui deve ser inserido a sua lógica de persitir as informações na sua plataforma, o código abaixo é apenas um exemplo, o mesmo deve ser subistituido para a sua realidade.
-   Credintials::update([
+    Credentials::update([
        'access_token' => $token,
        'refresh_token' => $refreshToken 
    ]) 
