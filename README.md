@@ -21,7 +21,7 @@ Agora ficou mais fácil ter o serviço do Melhor Envio no seu projeto de e-comme
 * [Licença](##Licença)
 
 ### require 
-* PHP >= 5.6
+* PHP >= 7.4
 * Ext-json = *
 * Guzzlehttp/guzzle >= 6.5
 
