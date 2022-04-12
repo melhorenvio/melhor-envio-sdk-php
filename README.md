@@ -1,8 +1,6 @@
 # Melhor Envio SDK - Integração com Melhor Envio
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/melhorenvio/melhor-envio-sdk-php.svg?style=flat-square)](https://packagist.org/packages/melhorenvio/melhor-envio-sdk-php)
-[![Build Status](https://img.shields.io/travis/melhorenvio/melhor-envio-sdk-php/master.svg?style=flat-square)](https://travis-ci.org/melhorenvio/melhor-envio-sdk-php)
-[![Quality Score](https://img.shields.io/scrutinizer/g/melhorenvio/melhor-envio-sdk-php.svg?style=flat-square)](https://scrutinizer-ci.com/g/melhorenvio/melhor-envio-sdk-php)
 [![Total Downloads](https://img.shields.io/packagist/dt/melhorenvio/melhor-envio-sdk-php.svg?style=flat-square)](https://packagist.org/packages/melhorenvio/melhor-envio-sdk-php)
 
 Agora ficou mais fácil ter o serviço do Melhor Envio no seu projeto de e-commerce.
