@@ -16,8 +16,8 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^7.4",
-        "melhorenvio/auth-sdk-php": "v1.0.3",
-        "melhorenvio/shipment-sdk-php": "dev-master",
+        "melhorenvio/auth-sdk-php": "^1.1.1",
+        "melhorenvio/shipment-sdk-php": "^3.0.0",
         "phpunit/phpunit": "9.5.x-dev",
         "vlucas/phpdotenv": "5.4.x-dev"
     },
