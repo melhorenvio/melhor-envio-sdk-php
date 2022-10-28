@@ -25,5 +25,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5"
     }
 }
