@@ -1,108 +1,60 @@
 <?php
 
-namespace MelhorEnvio\MelhorEnvioSdkPhp\Unit;
+namespace Unit;
 
-require "vendor/autoload.php";
-
-use Dotenv\Dotenv;
+use GuzzleHttp\Client;
+use JsonException;
+use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
+use MelhorEnvio\MelhorEnvioSdkPhp\Event;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class OAuth2Test extends TestCase
 {
-    protected OAuth2 $oAuth2;
-
-    public function __construct()
+    /**
+     * @test
+     * @small
+     * @throws RefreshTokenException
+     * @throws JsonException
+     */
+    public function it_calls_the_registered_refresh_event_when_the_refresh_token_is_issued(): void
     {
-        parent::__construct();
+        $expectedAccessToken = '::access_token::';
+        $expectedRefreshToken = '::refresh_token::';
 
-        $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../../');
-        $dotenv->load();
-
-        $this->oAuth2 = new OAuth2(
-            $_ENV['TEST_CLIENT_ID'],
-            $_ENV['TEST_CLIENT_SECRET'],
-            $_ENV['TEST_REDIRECT_URI']
+        $oAuth2 = new OAuth2(
+            '::client-id::',
+            '::client-secret::',
+            '::redirect-uri::',
         );
+
+        $this->mockOAuth2RefreshTokenReturn($oAuth2, [
+            'access_token' => $expectedAccessToken,
+            'refresh_token' => $expectedRefreshToken,
+        ]);
+
+        $receivedArgs = null;
+        Event::listen('refresh', static function (...$args) use (&$receivedArgs) {
+            $receivedArgs = $args;
+        });
+
+        $oAuth2->refreshToken('::refresh-token::');
+
+        $this->assertCount(2, $receivedArgs);
+        $this->assertEquals($expectedAccessToken, $receivedArgs[0]);
+        $this->assertEquals($expectedRefreshToken, $receivedArgs[1]);
     }
 
     /**
-     * @test
+     * @throws JsonException
      */
-    public function return_ok_If_oauth_has_property_client()
+    private function mockOAuth2RefreshTokenReturn(OAuth2 $oAuth2, array $return): void
     {
-        $this->assertTrue(property_exists($this->oAuth2, 'client'));
-    }
-
-    /**
-     * @test
-     */
-    public function return_ok_If_oauth_has_property_environment()
-    {
-        $this->assertTrue(property_exists($this->oAuth2, 'environment'));
-    }
-
-    /**
-     * @test
-     */
-    public function return_ok_If_oauth_has_property_client_id()
-    {
-        $this->assertTrue(property_exists($this->oAuth2, 'clientId'));
-    }
-
-    /**
-     * @test
-     */
-    public function return_ok_If_oauth_has_property_client_secret()
-    {
-        $this->assertTrue(property_exists($this->oAuth2, 'clientSecret'));
-    }
-
-    /**
-     * @test
-     */
-    public function return_ok_If_oauth_has_property_redirect_uri()
-    {
-        $this->assertTrue(property_exists($this->oAuth2, 'redirectUri'));
-    }
-
-    /**
-     * @test
-     */
-    public function return_ok_If_oauth_has_property_scope()
-    {
-        $this->assertTrue(property_exists($this->oAuth2, 'scope'));
-    }
-
-    /**
-     * @test
-     */
-    public function returns_true_when_exists_method_refresh_token()
-    {
-        $this->assertTrue(method_exists($this->oAuth2, 'refreshToken'));
-    }
-
-    /**
-     * @test
-     */
-    public function returns_true_when_exists_method_get_client_id()
-    {
-        $this->assertTrue(method_exists($this->oAuth2, 'getClientId'));
-    }
-
-    /**
-     * @test
-     */
-    public function returns_true_when_exists_method_get_app_secret()
-    {
-        $this->assertTrue(method_exists($this->oAuth2, 'getAppSecret'));
-    }
-
-    /**
-     * @test
-     */
-    public function returns_true_when_exists_method_get_environment()
-    {
-        $this->assertTrue(method_exists($this->oAuth2, 'getEnvironment'));
+        $oAuth2->setClient(
+            Mockery::mock(Client::class, [
+                'post->getBody' => json_encode($return, JSON_THROW_ON_ERROR)
+            ])
+        );
     }
 }
