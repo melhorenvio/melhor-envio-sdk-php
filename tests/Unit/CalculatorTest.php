@@ -47,6 +47,8 @@ class CalculatorTest extends TestCase
      */
     public function returns_true_when_exists_method_update_resource_http()
     {
+        $this->markTestIncomplete();
+
         $this->assertTrue(method_exists($this->calculator, 'updateResourceHttp'));
     }
 
@@ -55,6 +57,8 @@ class CalculatorTest extends TestCase
      */
     public function returns_true_when_exists_method_update_handle_refresh_token()
     {
+        $this->markTestIncomplete();
+
         $this->assertTrue(method_exists($this->calculator, 'handleRefreshToken'));
     }
 }

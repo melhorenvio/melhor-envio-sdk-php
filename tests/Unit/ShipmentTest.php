@@ -10,7 +10,7 @@ class ShipmentTest extends TestCase
      * @test
      * @small
      */
-    public function retries_twice_on_connect_exception(): void
+    public function retries_on_connect_exception(): void
     {
         $this->markTestIncomplete();
     }
@@ -19,7 +19,7 @@ class ShipmentTest extends TestCase
      * @test
      * @small
      */
-    public function retries_twice_when_http_error_code_is_greater_or_equal_to_500(): void
+    public function retries_when_http_error_code_is_greater_or_equal_to_500(): void
     {
         $this->markTestIncomplete();
     }

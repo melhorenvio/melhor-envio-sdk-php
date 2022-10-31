@@ -42,6 +42,8 @@ class CalculatorTest extends TestCase
      */
     public function shold_return_ok_when_call_method_calculate()
     {
+        $this->markTestIncomplete();
+
         $this->calculator->postalCode('01010010', '20271130');
         $this->calculator->setOwnHand();
         $this->calculator->setReceipt(false);
