@@ -1,9 +1,9 @@
 <?php
 
-namespace Unit;
+namespace Tests\Unit;
 
 use MelhorEnvio\MelhorEnvioSdkPhp\Event;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class EventTest extends TestCase
 {

@@ -1,17 +1,13 @@
 <?php
 
-namespace MelhorEnvio\MelhorEnvioSdkPhp\Feature;
-
-require "vendor/autoload.php";
+namespace Tests\Feature;
 
 use Dotenv\Dotenv;
-use MelhorEnvio\Enums\Environment;
-use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
+use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
+use MelhorEnvio\Resources\Shipment\Calculator;
 use MelhorEnvio\Resources\Shipment\Product;
-use MelhorEnvio\Resources\Resource;
-use MelhorEnvio\MelhorEnvioSdkPhp\Calculator;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class CalculatorTest extends TestCase
 {

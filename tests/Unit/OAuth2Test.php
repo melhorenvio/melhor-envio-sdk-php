@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit;
+namespace Tests\Unit;
 
 use GuzzleHttp\Client;
 use JsonException;
@@ -8,7 +8,7 @@ use MelhorEnvio\Auth\Exceptions\RefreshTokenException;
 use MelhorEnvio\MelhorEnvioSdkPhp\Event;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use Mockery;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class OAuth2Test extends TestCase
 {

@@ -1,116 +1,89 @@
 <?php
 
-namespace MelhorEnvio\MelhorEnvioSdkPhp\Unit;
+namespace Tests\Unit;
 
-require "vendor/autoload.php";
-
-use Dotenv\Dotenv;
-use MelhorEnvio\Enums\Environment;
-use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
-use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class ShipmentTest extends TestCase
 {
-    protected Shipment $shipment;
-
-    public function __construct()
+    /**
+     * @test
+     * @small
+     */
+    public function retries_twice_on_connect_exception(): void
     {
-        parent::__construct();
-
-        $dotenv = Dotenv::createUnsafeImmutable(__DIR__ . '/../../');
-        $dotenv->load();
-
-        $oAuth2 = new OAuth2(
-            $_ENV['TEST_CLIENT_ID'],
-            $_ENV['TEST_CLIENT_SECRET'],
-            $_ENV['TEST_REDIRECT_URI']
-        );
-
-        $this->shipment = new Shipment(
-            $oAuth2,
-            $_ENV['ACCESS_TOKEN'],
-            $_ENV['REFRESH_TOKEN']
-        );
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function returns_true_when_exists_method_get_refresh_token()
+    public function retries_twice_when_http_error_code_is_greater_or_equal_to_500(): void
     {
-        $this->assertTrue(method_exists($this->shipment, 'getRefreshToken'));
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function returns_true_when_exists_method_get_app_id()
+    public function does_not_retry_when_http_error_code_is_less_than_500(): void
     {
-        $this->assertTrue(method_exists($this->shipment, 'getAppId'));
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function returns_true_when_exists_method_get_app_secret()
+    public function retries_with_a_1_second_delay(): void
     {
-        $this->assertTrue(method_exists($this->shipment, 'getAppSecret'));
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function returns_true_when_exists_method_get_app_redirect_uri()
+    public function reruns_the_request_with_a_refresh_token_when_a_401_error_occurs(): void
     {
-        $this->assertTrue(method_exists($this->shipment, 'getAppRedirectUri'));
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function returns_true_when_exists_method_calculator()
+    public function has_10_seconds_of_timeout_for_requests(): void
     {
-        $this->assertTrue(method_exists($this->shipment, 'calculator'));
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function should_return_correct_refresh_token_when_get_refresh_token()
+    public function sets_the_base_uri_based_on_the_current_environment(): void
     {
-        $this->assertEquals($_ENV['REFRESH_TOKEN'], $this->shipment->getRefreshToken());
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function should_return_correct_app_id_when_get_app_id()
+    public function sets_the_bearer_token_header_in_request(): void
     {
-        $this->assertEquals($_ENV['TEST_CLIENT_ID'], $this->shipment->getAppId());
+        $this->markTestIncomplete();
     }
 
     /**
      * @test
+     * @small
      */
-    public function should_return_correct_app_secret_when_get_app_secret()
+    public function sets_the_accept_application_json_header_in_request(): void
     {
-        $this->assertEquals($_ENV['TEST_CLIENT_SECRET'], $this->shipment->getAppSecret());
-    }
-
-    /**
-     * @test
-     */
-    public function should_return_correct_app_redirect_uri_when_get_app_redirect_uri()
-    {
-        $this->assertEquals($_ENV['TEST_REDIRECT_URI'], $this->shipment->getAppRedirectUri());
-    }
-
-    /**
-     * @test
-     */
-    public function should_return_class_calculator_when_get_calculator()
-    {
-        $this->assertInstanceOf('MelhorEnvio\MelhorEnvioSdkPhp\Calculator', $this->shipment->calculator());
+        $this->markTestIncomplete();
     }
 }
