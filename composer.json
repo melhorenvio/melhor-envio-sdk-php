@@ -28,6 +28,7 @@
         }
     },
     "require-dev": {
-        "mockery/mockery": "^1.5"
+        "mockery/mockery": "^1.5",
+        "codeception/aspect-mock": "dev-master"
     }
 }
