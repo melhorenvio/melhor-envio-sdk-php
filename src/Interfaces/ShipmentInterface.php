@@ -6,7 +6,7 @@ use GuzzleHttp\Client;
 
 interface ShipmentInterface
 {
-    public function client(): Client;
+    public function makeClient(): Client;
 
     public function handleRefreshToken(): array;
 }
