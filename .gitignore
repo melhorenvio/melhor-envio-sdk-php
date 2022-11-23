@@ -1,2 +1,12 @@
 /vendor
 /.env
+
+composer.lock
+
+# PHPUnit
+/.phpunit.cache
+/.phpunit.*.cache
+
+# IDEs
+/.vscode
+/.idea
