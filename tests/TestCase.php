@@ -2,14 +2,11 @@
 
 namespace Tests;
 
-require_once __DIR__ . "/../vendor/autoload.php";
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-use AspectMock\Test as AspectMock;
+require_once __DIR__ . "/../vendor/autoload.php";
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    protected function tearDown(): void
-    {
-        AspectMock::clean();
-    }
+    use MockeryPHPUnitIntegration;
 }

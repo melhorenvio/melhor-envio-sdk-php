@@ -3,20 +3,16 @@
 namespace Tests\Unit;
 
 use Generator;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use MelhorEnvio\Enums\Endpoint;
 use MelhorEnvio\Exceptions\CalculatorException;
-use MelhorEnvio\Exceptions\InvalidCalculatorPayloadException;
-use MelhorEnvio\MelhorEnvioSdkPhp\FakeShipment;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
 use MelhorEnvio\Resources\Shipment\Package;
 use Mockery;
 use Mockery\MockInterface;
+use Tests\Support\TestingShipment;
 use Tests\TestCase;
 
 class ShipmentTest extends TestCase
@@ -35,29 +31,26 @@ class ShipmentTest extends TestCase
         $this->oAuth2Mock = Mockery::mock(OAuth2::class, [
             'getEnvironment' => self::VALID_ENVIRONMENT,
         ]);
-
-        FakeShipment::$shouldDelay = false;
     }
 
     /**
      * @test
      * @small
      * @dataProvider retryProvider
-     * @throws InvalidCalculatorPayloadException|CalculatorException
      */
     public function retries_when_http_error_code_is_greater_or_equal_to_500(int $status, int $retryTimes): void
     {
-        $errorResponses = array_fill(0, $retryTimes, new Response($status, [], null));
-
-        $this->mockResponses([
-            ...$errorResponses,
-            new Response(200, [], '{"foo": "bar"}')
-        ]);
-
-        $shipment = new FakeShipment(
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
+        );
+
+        $errorResponses = array_fill(0, $retryTimes, new Response($status, [], null));
+
+        $shipment->fake(
+            ...$errorResponses,
+            ...[new Response(200, [], '{"foo": "bar"}')]
         );
 
         $sut = $this->calculateBasicShipment($shipment);
@@ -68,22 +61,19 @@ class ShipmentTest extends TestCase
     /**
      * @test
      * @small
-     * @throws InvalidCalculatorPayloadException
      */
     public function does_not_retry_when_http_error_code_is_less_than_500(): void
     {
         $expectedStatusCode = 400;
         $expectedMessage = '::message::';
 
-        $this->mockResponses([
-            new Response($expectedStatusCode, [], $expectedMessage)
-        ]);
-
-        $shipment = new FakeShipment(
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
         );
+
+        $shipment->fake(new Response($expectedStatusCode, [], $expectedMessage));
 
         try {
             $this->calculateBasicShipment($shipment);
@@ -103,15 +93,13 @@ class ShipmentTest extends TestCase
      */
     public function retries_with_a_1_second_delay(): void
     {
-        FakeShipment::$shouldDelay = true;
-
-        $this->mockResponses([new Response(500), new Response()]);
-
-        $shipment = new FakeShipment(
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
         );
+
+        $shipment->withDelay();
 
         $requestChronometer = [];
 
@@ -121,6 +109,11 @@ class ShipmentTest extends TestCase
             }
         ]);
         $shipment->setHttp($client);
+
+        $shipment->fake(
+            new Response(500),
+            new Response()
+        );
 
         $this->calculateBasicShipment($shipment);
 
@@ -143,23 +136,21 @@ class ShipmentTest extends TestCase
             ],
         ]);
 
-        $history = &$this->mockResponses([
-            new Response(401),
-            new Response(),
-        ]);
-
-        $shipment = new FakeShipment(
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
         );
 
+        $shipment->fake(
+            new Response(401),
+            new Response(),
+        );
+
         $this->calculateBasicShipment($shipment);
 
-        // The first request that fails is overrided by the successfly
-        // request due to the way the code is dealing with the retries.
         /** @var Request $request */
-        $request = $history[0]['request'];
+        $request = $shipment->recorded()[1]['request'];
 
         $this->assertSame(
             sprintf("Bearer %s", $refreshedAccessToken),
@@ -173,17 +164,17 @@ class ShipmentTest extends TestCase
      */
     public function has_10_seconds_timeout_for_requests(): void
     {
-        $history = &$this->mockResponses([new Response()]);
-
-        $shipment = new FakeShipment(
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
         );
 
+        $shipment->fake(new Response());
+
         $this->calculateBasicShipment($shipment);
 
-        $timeoutInSeconds = $history[0]['options']['timeout'];
+        $timeoutInSeconds = $shipment->recorded()[0]['options']['timeout'];
 
         $this->assertSame(10, $timeoutInSeconds);
     }
@@ -196,10 +187,9 @@ class ShipmentTest extends TestCase
     public function sets_the_base_uri_based_on_the_current_environment(
         ?string $environment,
         string $expectedBaseUri
-    ): void {
-        $history = &$this->mockResponses([new Response()]);
-
-        $shipment = new FakeShipment(
+    ): void
+    {
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -209,9 +199,11 @@ class ShipmentTest extends TestCase
             $shipment->setEnvironment($environment);
         }
 
+        $shipment->fake(new Response());
+
         $this->calculateBasicShipment($shipment);
 
-        $baseUri = (string)$history[0]['options']['base_uri'];
+        $baseUri = (string)$shipment->recorded()[0]['options']['base_uri'];
 
         $this->assertSame($expectedBaseUri, $baseUri);
     }
@@ -222,18 +214,18 @@ class ShipmentTest extends TestCase
      */
     public function sets_the_bearer_token_header_in_request(): void
     {
-        $history = &$this->mockResponses([new Response()]);
-
-        $shipment = new FakeShipment(
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
         );
 
+        $shipment->fake(new Response());
+
         $this->calculateBasicShipment($shipment);
 
         /** @var Request $request */
-        $request = $history[0]['request'];
+        $request = $shipment->recorded()[0]['request'];
 
         $this->assertSame(
             sprintf("Bearer %s", self::ACCESS_TOKEN),
@@ -247,42 +239,25 @@ class ShipmentTest extends TestCase
      */
     public function sets_the_accept_application_json_header_in_request(): void
     {
-        $history = &$this->mockResponses([new Response()]);
-
-        $shipment = new FakeShipment(
+        $shipment = new TestingShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
         );
 
+        $shipment->fake(new Response());
+
         $this->calculateBasicShipment($shipment);
 
         /** @var Request $request */
-        $request = $history[0]['request'];
+        $request = $shipment->recorded()[0]['request'];
 
         $this->assertSame('application/json', $request->getHeader('Accept')[0]);
-    }
-
-    private function &mockResponses(array $responses): array
-    {
-        $mock = new MockHandler($responses);
-
-        $handlerStack = HandlerStack::create($mock);
-
-        $container = [];
-        $history = Middleware::history($container);
-        $handlerStack->push($history);
-
-        FakeShipment::$handlerStack = $handlerStack;
-
-        return $container;
     }
 
     /**
      * @param  Shipment  $shipment
      * @return mixed
-     * @throws CalculatorException
-     * @throws InvalidCalculatorPayloadException
      */
     private function calculateBasicShipment(Shipment $shipment)
     {
