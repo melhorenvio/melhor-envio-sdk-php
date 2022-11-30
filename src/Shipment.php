@@ -124,7 +124,7 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
         return $this->oAuth2->refreshToken($this->refreshToken);
     }
 
-    private function createStack(): HandlerStack
+    protected function createStack(): HandlerStack
     {
         return HandlerStack::create();
     }
@@ -134,7 +134,7 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
         $stack->push($this->middlewareRefreshToken());
     }
 
-    private function addRetryMiddlewareToStack(HandlerStack $stack): void
+    protected function addRetryMiddlewareToStack(HandlerStack $stack): void
     {
         $stack->push(Middleware::retry($this->retryDecider(), $this->retryDelay()));
     }

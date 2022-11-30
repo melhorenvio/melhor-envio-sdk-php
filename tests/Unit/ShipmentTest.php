@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use AspectMock\Test as AspectMock;
 use Generator;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -12,6 +11,7 @@ use GuzzleHttp\Psr7\Response;
 use MelhorEnvio\Enums\Endpoint;
 use MelhorEnvio\Exceptions\CalculatorException;
 use MelhorEnvio\Exceptions\InvalidCalculatorPayloadException;
+use MelhorEnvio\MelhorEnvioSdkPhp\FakeShipment;
 use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
 use MelhorEnvio\Resources\Shipment\Package;
@@ -35,6 +35,8 @@ class ShipmentTest extends TestCase
         $this->oAuth2Mock = Mockery::mock(OAuth2::class, [
             'getEnvironment' => self::VALID_ENVIRONMENT,
         ]);
+
+        FakeShipment::$shouldDelay = false;
     }
 
     /**
@@ -45,8 +47,6 @@ class ShipmentTest extends TestCase
      */
     public function retries_when_http_error_code_is_greater_or_equal_to_500(int $status, int $retryTimes): void
     {
-        $this->disableRetryDelay();
-
         $errorResponses = array_fill(0, $retryTimes, new Response($status, [], null));
 
         $this->mockResponses([
@@ -54,7 +54,7 @@ class ShipmentTest extends TestCase
             new Response(200, [], '{"foo": "bar"}')
         ]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -79,7 +79,7 @@ class ShipmentTest extends TestCase
             new Response($expectedStatusCode, [], $expectedMessage)
         ]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -103,9 +103,11 @@ class ShipmentTest extends TestCase
      */
     public function retries_with_a_1_second_delay(): void
     {
+        FakeShipment::$shouldDelay = true;
+
         $this->mockResponses([new Response(500), new Response()]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -146,7 +148,7 @@ class ShipmentTest extends TestCase
             new Response(),
         ]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -173,7 +175,7 @@ class ShipmentTest extends TestCase
     {
         $history = &$this->mockResponses([new Response()]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -197,7 +199,7 @@ class ShipmentTest extends TestCase
     ): void {
         $history = &$this->mockResponses([new Response()]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -222,7 +224,7 @@ class ShipmentTest extends TestCase
     {
         $history = &$this->mockResponses([new Response()]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -247,7 +249,7 @@ class ShipmentTest extends TestCase
     {
         $history = &$this->mockResponses([new Response()]);
 
-        $shipment = new Shipment(
+        $shipment = new FakeShipment(
             $this->oAuth2Mock,
             self::ACCESS_TOKEN,
             self::REFRESH_TOKEN
@@ -261,11 +263,6 @@ class ShipmentTest extends TestCase
         $this->assertSame('application/json', $request->getHeader('Accept')[0]);
     }
 
-    private function disableRetryDelay(): void
-    {
-        AspectMock::double(Shipment::class, ['retryDelay' => fn() => static fn() => 0]);
-    }
-
     private function &mockResponses(array $responses): array
     {
         $mock = new MockHandler($responses);
@@ -276,7 +273,7 @@ class ShipmentTest extends TestCase
         $history = Middleware::history($container);
         $handlerStack->push($history);
 
-        AspectMock::double(Shipment::class, ['createStack' => $handlerStack]);
+        FakeShipment::$handlerStack = $handlerStack;
 
         return $container;
     }
