@@ -15,7 +15,7 @@ class TestingShipment extends Shipment
 {
     private MockHandler $mockHandler;
     private array $recorded = [];
-    private bool $shouldDelay = false;
+    private bool $shouldDelayRequests = false;
 
     public function __construct(OAuth2 $oAuth2, string $accessToken, string $refreshToken)
     {
@@ -65,12 +65,12 @@ class TestingShipment extends Shipment
      */
     final public function withDelay(): void
     {
-        $this->shouldDelay = true;
+        $this->shouldDelayRequests = true;
     }
 
     final protected function retryDelay(): Closure
     {
-        if ($this->shouldDelay) {
+        if ($this->shouldDelayRequests) {
             return parent::retryDelay();
         }
 
