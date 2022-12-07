@@ -47,7 +47,7 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
     {
         $stack = $this->createStack();
 
-        $this->addRefreshMiddlewareToStack($stack);
+        $this->addRefreshTokenMiddlewareToStack($stack);
         $this->addRetryMiddlewareToStack($stack);
 
         $defaultOptions = [
@@ -129,7 +129,7 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
         return HandlerStack::create();
     }
 
-    private function addRefreshMiddlewareToStack(HandlerStack $stack): void
+    private function addRefreshTokenMiddlewareToStack(HandlerStack $stack): void
     {
         $stack->push($this->middlewareRefreshToken());
     }
