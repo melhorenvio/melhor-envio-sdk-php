@@ -54,6 +54,31 @@ class EventTest extends TestCase
      * @test
      * @small
      */
+    public function does_not_trigger_registered_callbacks_to_other_events(): void
+    {
+        $callback1CallCount = 0;
+        $callback2CallCount = 0;
+
+        $callback1 = static function () use (&$callback1CallCount) {
+            $callback1CallCount++;
+        };
+        $callback2 = static function () use (&$callback2CallCount) {
+            $callback2CallCount++;
+        };
+
+        Event::listen('foo', $callback1);
+        Event::listen('bar', $callback2);
+
+        Event::trigger('foo');
+
+        $this->assertSame(1, $callback1CallCount);
+        $this->assertSame(0, $callback2CallCount);
+    }
+
+    /**
+     * @test
+     * @small
+     */
     public function passes_one_argument_to_the_callback(): void
     {
         $receivedArgs = null;
