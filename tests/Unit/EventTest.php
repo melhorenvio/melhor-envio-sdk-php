@@ -11,7 +11,7 @@ class EventTest extends TestCase
      * @test
      * @small
      */
-    public function it_can_register_and_trigger_the_callback(): void
+    public function triggers_a_registered_callback(): void
     {
         $callCount = 0;
 
@@ -29,7 +29,7 @@ class EventTest extends TestCase
      * @test
      * @small
      */
-    public function it_can_register_and_trigger_multiple_callbacks_with_the_same_name(): void
+    public function triggers_multiple_callbacks_registered_to_the_same_event(): void
     {
         $callback1CallCount = 0;
         $callback2CallCount = 0;
@@ -54,7 +54,7 @@ class EventTest extends TestCase
      * @test
      * @small
      */
-    public function it_can_pass_one_argument_to_the_callback(): void
+    public function passes_one_argument_to_the_callback(): void
     {
         $receivedArgs = null;
         $expectedArg = 'arg1';
@@ -74,7 +74,7 @@ class EventTest extends TestCase
      * @test
      * @small
      */
-    public function it_can_pass_multiple_arguments_to_the_callback(): void
+    public function passes_multiple_arguments_to_the_callback(): void
     {
         $receivedArgs = null;
         $expectedArgs = [

@@ -18,7 +18,7 @@ class OAuth2Test extends TestCase
      * @throws RefreshTokenException
      * @throws JsonException
      */
-    public function it_calls_the_registered_refresh_event_when_the_refresh_token_is_issued(): void
+    public function triggers_the_registered_refresh_event_when_the_refresh_token_is_issued(): void
     {
         $expectedAccessToken = '::access_token::';
         $expectedRefreshToken = '::refresh_token::';
