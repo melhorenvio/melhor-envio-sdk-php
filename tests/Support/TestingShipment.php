@@ -27,9 +27,9 @@ class TestingShipment extends Shipment
     /**
      * @throws Exception
      */
-    final protected function createStack(): HandlerStack
+    final protected function createMiddlewareStack(): HandlerStack
     {
-        $handlerStack = parent::createStack();
+        $handlerStack = parent::createMiddlewareStack();
 
         $handlerStack->setHandler($this->mockHandler);
 

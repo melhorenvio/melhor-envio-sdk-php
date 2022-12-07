@@ -45,13 +45,13 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
 
     public function makeClient(array $extraOptions = []): Client
     {
-        $stack = $this->createStack();
+        $middlewareStack = $this->createMiddlewareStack();
 
-        $this->addRefreshTokenMiddlewareToStack($stack);
-        $this->addRetryMiddlewareToStack($stack);
+        $this->addRefreshTokenMiddlewareToStack($middlewareStack);
+        $this->addRetryMiddlewareToStack($middlewareStack);
 
         $defaultOptions = [
-            'handler' => $stack,
+            'handler' => $middlewareStack,
             'base_uri' => $this->getBaseUri(),
             'timeout' => 10,
             'headers' => [
@@ -124,7 +124,7 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
         return $this->oAuth2->refreshToken($this->refreshToken);
     }
 
-    protected function createStack(): HandlerStack
+    protected function createMiddlewareStack(): HandlerStack
     {
         return HandlerStack::create();
     }
