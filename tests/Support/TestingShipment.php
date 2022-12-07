@@ -8,20 +8,35 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
+use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
 use MelhorEnvio\MelhorEnvioSdkPhp\Shipment;
 
 class TestingShipment extends Shipment
 {
-    private HandlerStack $handlerStack;
-    private array $recorded;
+    private MockHandler $mockHandler;
+    private array $recorded = [];
     private bool $shouldDelay = false;
+
+    public function __construct(OAuth2 $oAuth2, string $accessToken, string $refreshToken)
+    {
+        $this->mockHandler = new MockHandler();
+
+        parent::__construct($oAuth2, $accessToken, $refreshToken);
+    }
 
     /**
      * @throws Exception
      */
     final protected function createStack(): HandlerStack
     {
-        return $this->handlerStack = parent::createStack();
+        $handlerStack = parent::createStack();
+
+        $handlerStack->setHandler($this->mockHandler);
+
+        $history = Middleware::history($this->recorded);
+        $handlerStack->push($history);
+
+        return $handlerStack;
     }
 
     /**
@@ -32,13 +47,7 @@ class TestingShipment extends Shipment
      */
     final public function fake(Response ...$responses): void
     {
-        $mock = new MockHandler($responses);
-
-        $this->handlerStack->setHandler($mock);
-
-        $this->recorded = [];
-        $history = Middleware::history($this->recorded);
-        $this->handlerStack->push($history);
+        $this->mockHandler->append(...$responses);
     }
 
     /**
@@ -46,7 +55,7 @@ class TestingShipment extends Shipment
      */
     final public function recorded(): array
     {
-        return $this->recorded;
+        return array_reverse($this->recorded);
     }
 
     /**
