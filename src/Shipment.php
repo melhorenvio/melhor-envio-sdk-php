@@ -3,18 +3,15 @@
 namespace MelhorEnvio\MelhorEnvioSdkPhp;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Middleware;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\RequestException;
-use GuzzleHttp\Exception\ConnectException;
 use MelhorEnvio\Enums\Endpoint;
-use MelhorEnvio\Shipment as ShipmentSDK;
 use MelhorEnvio\MelhorEnvioSdkPhp\Interfaces\ShipmentInterface;
-use MelhorEnvio\MelhorEnvioSdkPhp\OAuth2;
-use Psr\Http\Message\ResponseInterface;
+use MelhorEnvio\Shipment as ShipmentSDK;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Shipment extends ShipmentSDK implements ShipmentInterface
 {
@@ -36,28 +33,34 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
 
         $this->refreshToken = $refreshToken;
 
-        $this->stack = HandlerStack::create();
-
-        $this->stack->push($this->middlewareRefreshToken());
-
-        $this->stack->push(
-            Middleware::retry($this->retryDecider(), $this->retryDelay())
-        );
-
-        $this->setHttp($this->client());
+        $this->setHttp($this->makeClient());
     }
 
-    public function client(): Client
+    public function setEnvironment(string $environment): void
     {
-        return new Client([
-            'handler' => $this->stack,
-            'base_uri' => Endpoint::ENDPOINTS[$this->getEnvironment()] . '/api/' . Endpoint::VERSIONS[$this->getEnvironment()] . '/',
+        parent::setEnvironment($environment);
+
+        $this->setHttp($this->makeClient());
+    }
+
+    public function makeClient(array $extraOptions = []): Client
+    {
+        $middlewareStack = $this->createMiddlewareStack();
+
+        $this->addRefreshTokenMiddlewareToStack($middlewareStack);
+        $this->addRetryMiddlewareToStack($middlewareStack);
+
+        $defaultOptions = [
+            'handler' => $middlewareStack,
+            'base_uri' => $this->getBaseUri(),
             'timeout' => 10,
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Accept' => 'application/json',
-            ]
-        ]);
+            ],
+        ];
+
+        return new Client(array_merge($defaultOptions, $extraOptions));
     }
 
     protected function retryDecider()
@@ -65,18 +68,13 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
         return function (
             $retries,
             Request $request,
-            Response $response = null,
-            RequestException $exception = null
+            Response $response = null
         ) {
             
             if ($retries >= self::MAX_RETRIES) {
                 return false;
             }
             
-            if ($exception instanceof ConnectException) {
-                return true;
-            }
-
             if ($response) {
                 if ($response->getStatusCode() >= 500) {
                     return true;
@@ -102,8 +100,12 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
                 return $promise->then(
                     function (ResponseInterface $response) use ($request, $options) {
                         if ($response->getStatusCode() === 401) {
-                            $request = $this->updateToken($request);
-                            return $this->getHttp()->sendAsync($request, $options);
+                            $requestWithNewToken = $request->withHeader(
+                                'Authorization',
+                                sprintf("Bearer %s", $this->getRefreshedToken())
+                            );
+
+                            return $this->getHttp()->send($requestWithNewToken, $options);
                         }
                         return $response;
                     }
@@ -112,18 +114,37 @@ class Shipment extends ShipmentSDK implements ShipmentInterface
         };
     }
 
-    private function updateToken(RequestInterface $request)
+    private function getRefreshedToken(): string
     {
-        $token = $this->handleRefreshToken();
-        return \GuzzleHttp\Psr7\modify_request($request, [
-            'set_headers' => [
-                'Authorization' => 'Bearer ' . $token['access_token'],
-            ],
-        ]);
+        return $this->handleRefreshToken()['access_token'];
     }
 
     public function handleRefreshToken(): array
     {
         return $this->oAuth2->refreshToken($this->refreshToken);
+    }
+
+    protected function createMiddlewareStack(): HandlerStack
+    {
+        return HandlerStack::create();
+    }
+
+    private function addRefreshTokenMiddlewareToStack(HandlerStack $stack): void
+    {
+        $stack->push($this->middlewareRefreshToken());
+    }
+
+    protected function addRetryMiddlewareToStack(HandlerStack $stack): void
+    {
+        $stack->push(Middleware::retry($this->retryDecider(), $this->retryDelay()));
+    }
+
+    private function getBaseUri(): string
+    {
+        return sprintf(
+            "%s/api/%s/",
+            Endpoint::ENDPOINTS[$this->getEnvironment()],
+            Endpoint::VERSIONS[$this->getEnvironment()]
+        );
     }
 }

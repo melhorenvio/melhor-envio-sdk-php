@@ -4,7 +4,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "MelhorEnvio\\MelhorEnvioSdkPhp\\": "src/"
+            "MelhorEnvio\\MelhorEnvioSdkPhp\\": "src/",
+            "Tests\\": "tests/"
         }
     },
     "authors": [
@@ -15,9 +16,9 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": "^7.4",
-        "melhorenvio/auth-sdk-php": "v1.0.3",
-        "melhorenvio/shipment-sdk-php": "dev-master",
+        "php": "^7.4|^8.0|^8.1",
+        "melhorenvio/auth-sdk-php": "^1.1.1",
+        "melhorenvio/shipment-sdk-php": "^3.0.0",
         "phpunit/phpunit": "9.5.x-dev",
         "vlucas/phpdotenv": "5.4.x-dev"
     },
@@ -25,5 +26,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true
         }
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.5"
     }
 }
