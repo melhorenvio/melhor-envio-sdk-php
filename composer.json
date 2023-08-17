@@ -22,7 +22,7 @@
         "vlucas/phpdotenv": "5.4.x-dev"
     },
      "require-dev": {
-        "phpunit/phpunit": "9.5.x-dev",
+        "phpunit/phpunit": "9.5.x-dev"
     },
     "config": {
         "allow-plugins": {
