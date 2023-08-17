@@ -19,8 +19,10 @@
         "php": "^7.4|^8.0|^8.1",
         "melhorenvio/auth-sdk-php": "^1.1.1",
         "melhorenvio/shipment-sdk-php": "^3.0.0",
-        "phpunit/phpunit": "9.5.x-dev",
         "vlucas/phpdotenv": "5.4.x-dev"
+    },
+     "require-dev": {
+        "phpunit/phpunit": "9.5.x-dev",
     },
     "config": {
         "allow-plugins": {
